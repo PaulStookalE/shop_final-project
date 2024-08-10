@@ -1,6 +1,8 @@
-from . import BASE, Cart, session
+from .base import BASE, session
+from .cart import Cart
 from sqlalchemy import Column, String, Integer, Boolean
 from sqlalchemy.orm import relationship
+from flask_login import UserMixin
 
 
 

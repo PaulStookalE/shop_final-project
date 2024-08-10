@@ -10,10 +10,8 @@ class Order(BASE):
     time = Column(DateTime, nullable=False)
     status = Column(String(50), nullable=False)
     
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     items = relationship('Ordered_Item', backref='order')
-
-
 
 
 class OrderedItems(BASE):
