@@ -1,9 +1,9 @@
 from . import app, login_manager
 from .models import User, session, Item
-from flask import redirect, render_template, url_for, flash
+from flask import redirect, render_template, url_for, flash, request
 from flask_login import current_user, login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from .forms import LoginForm, RegisterForm
 
 # Залогінення користувача.
 @login_manager.user_loader
@@ -107,3 +107,72 @@ def registration():
 def log_out():
     logout_user()
     return redirect(url_for('log_in'))
+
+
+
+# Створення роуту для додавання товару до корзини.
+@app.route('/add_to_cart/<id>', methods=['POST'])
+def add_to_cart(id):
+
+    if not current_user.is_authentificated:
+        flash('You must log in')
+        return redirect(url_for(home))
+    
+    else:
+        item = session.query(Item).get(id=id)
+
+        if request.method == 'POST':
+            quantity = request.form['quantity']
+
+            current_user.add_to_cart(id, quantity)
+            flash(f'''{item.name} successfully added to the <a href=cart>cart</a>.<br> <a href={url_for("cart")}>view cart!</a>''','success')
+            return redirect(url_for('home'))
+        
+
+
+# Створення роуту для перегляду всіх замовлень користувача. Лише для залогінених
+@app.route('/orders')
+@login_required
+def orders():
+    return render_template('orders.html', orders=current_user.orders)
+
+
+
+# Створення роуту для перегляду кошика. Лише для залогінених.
+@app.route('/cart')
+@login_required
+def cart():
+    price = 0
+    quantity = []
+    items = []
+    price_ids = []
+
+    for cart in current_user.cart:
+        items.append(cart.item)
+        quantity.append(cart.quantity)
+
+        price_id_dict = {
+            'price': cart.item.price_id,
+            'quantity': cart.quantity,
+        }
+        price_ids.append(price_id_dict)
+        price += cart.item.price * cart.quantity
+
+    return render_template('cart.html', items=items, quantity=quantity, price_ids=price_ids, price=price)
+
+
+
+# Створення роуту для видалення товару і його кількості із кошику.
+@app.route('/remove/<id>/quantity')
+@login_required
+def remove(id, quantity):
+    current_user.remove_from_cart(id, quantity)
+    return redirect(url_for('cart'))
+
+
+
+# Створення роуту для перегляду конкретного товару.
+@app.route('/item/<int:id>')
+def item(id):
+    item = session.query(Item).get(id=id)
+    return render_template('item.html', item=item)
