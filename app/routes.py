@@ -176,3 +176,16 @@ def remove(id, quantity):
 def item(id):
     item = session.query(Item).get(id=id)
     return render_template('item.html', item=item)
+
+
+
+# Створення роуту для виконання пошуку серед товарів.
+@app.route('/search')
+def search():
+    query = request.args['query']
+    # Дозволяє здійснювати пошук, підставляючи ключове слово в початок / середину / кінець і таким чином шукаючи
+    search = f'%{query}%'
+
+    items = session.query(Item).filter(item.name.like(search)).all()
+
+    return render_template('home.html', items=items, search=True, query=query)

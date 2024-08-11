@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask
 from flask_login import LoginManager
 from dotenv import load_dotenv
@@ -15,3 +16,9 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 create_db()
+
+
+# Створення контекстного процесора, який передаватиме у HTML щось, у даному випадку час.
+@app.context_processor
+def inject():
+    return {'now': datetime.utcnow()}

@@ -112,7 +112,7 @@ def edit(type, id):
         order = session.query(Order).get(id)
 
         form = OrderEditForm(
-            status = order.status
+            status = order.status 
         )
 
         if form.validate_on_submit:
