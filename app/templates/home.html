@@ -7,6 +7,8 @@
 
 
 {% block content %}
+
+    <!-- Створення обробника flash сповіщень. -->
     {% with msgs = get_flashed_messages(with_categories=True) %}
         {% for category, message in msgs %}
             {% if category == 'error' %}
@@ -21,7 +23,7 @@
         {% endfor %}
     {% endwith %}
 
-
+    
     {% if search %}
         <h3>Results for " {{ query }} "</h3>
     {% else %}
@@ -48,6 +50,8 @@
                     </a>   
                 {% endfor %}
             </div>
+
+    {% endif %}
 
             
 

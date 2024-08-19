@@ -8,7 +8,7 @@ from .forms import LoginForm, RegisterForm
 # Залогінення користувача.
 @login_manager.user_loader
 def load_user(user_id):
-    return session.query(User).get(id=user_id)
+    return session.query(User).get(user_id)
 
 
 # Створення головної сторінки із товарами.
@@ -23,13 +23,13 @@ def home():
 def log_in():
 
     # Перевірка чи є користувач залогінений.
-    if current_user.is_authentificated:
+    if current_user.is_authenticated:
         return redirect(url_for('home'))
     
     else:
         form = LoginForm()
         
-        # Перевірка на те чи правильно заповнені поля форми.
+        # Перевірка на те чи була надіслана форма.
         if form.validate_on_submit():
             email = form.email.data
             user = session.query(User).filter_by(email=email).first()
@@ -55,11 +55,11 @@ def log_in():
 
 
 # Створення стоірнки для реєстрації.
-@app.route('/register', method=['POST', 'GET'])
+@app.route('/register', methods=['POST', 'GET'])
 def registration():
 
     # Перевірка чи користувач зареєстрований, і якщо так -- його перекидує на головну сторінку.
-    if current_user.is_authentificated:
+    if current_user.is_authenticated:
         return redirect(url_for('home'))
     
     else:

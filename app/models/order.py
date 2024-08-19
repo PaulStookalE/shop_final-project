@@ -14,7 +14,7 @@ class Order(BASE):
     items = relationship('Ordered_Item', backref='order')
 
 
-class OrderedItems(BASE):
+class Ordered_Item(BASE):
     __tablename__ = 'ordered_items'
     
     id = Column(Integer, primary_key=True)

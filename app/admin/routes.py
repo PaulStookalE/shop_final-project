@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
 from ..models import Order, session, Item
-from utils import admin_only
+from .utils import admin_only
 from .forms_admin import AddNewItemForm, OrderEditForm
 
 

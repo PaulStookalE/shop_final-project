@@ -2,12 +2,13 @@ from .base import BASE, session
 from .cart import Cart
 from sqlalchemy import Column, String, Integer, Boolean
 from sqlalchemy.orm import relationship
+# UserMixin -- клас, що дає змогу авторизувати об'єкт. В даному випадку login_manager зможе логінізувати User.
 from flask_login import UserMixin
 
 
 
 # Створення таблички користувачів.
-class User(BASE):
+class User(UserMixin, BASE):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
