@@ -1,4 +1,5 @@
-from . import app, login_manager
+from itsdangerous import URLSafeTimedSerializer
+from . import app, login_manager, send_confirmation_mail
 from .models import User, session, Item
 from flask import redirect, render_template, url_for, flash, request
 from flask_login import current_user, login_user, login_required, logout_user
@@ -47,7 +48,7 @@ def log_in():
             # Якщо користувач існує, проте пароль неправильний -- поля форми очищаються.
             else:
                 flash('Password or email is incorrect', 'error')
-                return redirect(url_for(log_in))
+                return redirect(url_for('log_in'))
             
         else:
             return render_template('login.html', form=form)
@@ -189,3 +190,60 @@ def search():
     items = session.query(Item).filter(item.name.like(search)).all()
 
     return render_template('home.html', items=items, search=True, query=query)
+
+
+
+# Створення роуту для підтвердження імейлу користувача.
+@app.route('/confirm/<token>')
+def confirm_email(token):
+    try:
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        email = serializer.loads(token, salt='email-confirmation-salt', max_age=3600)
+
+    except:
+        flash('The confirmation link is invalid', 'error')
+        return redirect(url_for('log_in'))
+    
+
+    user = session.query(User).filter_by(email=email).first()
+    if user.email_confirmed:
+        flash('Account already confirmed. Please login', 'success')
+    else: 
+        user.email_confirmed = True
+
+        try:
+            session.add(User)
+            session.commit()
+            flash('Email adress successfully confirmed', 'success')
+
+        except Exception as exc:
+            raise exc
+        
+        finally:
+            session.close()
+
+            return redirect(url_for('log_in'))
+        
+
+
+# Створення роуту для перенадсилання імейлу
+@app.route('/resend')
+@login_required
+def resend():
+    send_confirmation_mail(current_user.email)
+    logout_user()
+    flash('The confirmation email was sent successfully', 'success')
+    return redirect(url_for('log_in'))
+
+
+
+# Створення роуту для підтвердження оплати.
+@app.route("/success")
+def payment_success():
+    return render_template("payment_success.html")
+
+
+# Створення роуту для відхилення оплати.
+@app.route("/failure")
+def payment_failure():
+    return render_template("payment_failure.html")

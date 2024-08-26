@@ -1,0 +1,60 @@
+{% extends 'admin/base.html' %}
+
+
+{% block title %}
+    Admin Items
+{% endblock %}
+
+
+{% block content %}
+    {% with msgs = get_flashed_messages(with_categories=True) %}
+        {% for category, message in msgs %}
+            {% if category == 'error' %}
+                <div class="flash-error">
+                    {{ message | safe }}
+                </div>
+            {% else %}
+                <div class="success">
+                    {{ message | safe }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
+
+    {% if not items %}
+        <div class="flash-error">No items registered<br></div>
+
+    {% else %}
+        <div class="add-new btn-succes btn">
+            <a href="{{ url_for('admin.add') }}" class="text-light">Add new Item</a>
+        </div>
+
+        <table class="table table-striped">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Image Link</th>
+                <th>Details</th>
+                <th>Operations</th>
+            </tr>
+
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.category }}</td>
+                    <td>{{ item.image[:15] }}</td>
+                    <td>{{ item.details[:40] }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.edit', type='item', id=item.id) }}">&#9998;</a>
+                        <a href="{{ url_for('admin.delete', type='item', id=item.id) }}">&#10060;</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+{% endblock %}

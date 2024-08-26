@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Home
+{% endblock %}
+
+
+{% block content %}
+    {% with msgs = get_flashed_messages(with_categories=True) %}
+        {% for category, message in msgs %}
+            {% if category == 'error' %}
+                <div class="flash-error">
+                    {{ message | safe }}
+                </div>
+            {% else %}
+                <div class="success">
+                    {{ message | safe }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
+
+
+    <div class="item-display">
+        <div class="item-rapper">
+            <div class="img-rapper">
+                <img src="{{ items.image }}" class="pic" alt="">
+            </div>
+            <br>{{ item.name }}<br>
+            <span class="right-item">{{ item.price }}</span><br>
+
+            <i class="fa fa-star checked"></i>
+            <i class="fa fa-star checked"></i>
+            <i class="fa fa-star checked"></i>
+            <i class="fa fa-star checked"></i>
+            <i class="fa fa-star checked"></i>
+            <spa class="text-muted">{{ range (1, 51) | random }}</span>
+            <div class="details">
+                {{ item.details | safe }}
+            </div>
+
+            <form action="'{{ url_for('add_to_cart', id=item.id) }}" method="post">
+                Quantity:
+                <input type="number"
+                    value="1"
+                    name="quantity"
+                    min="1"
+                    max="50" 
+                    onkeyup="if(this.value > 50 ) this.value = 50;" required> 
+
+                <br><br>
+
+                <input type="submit" class="add_to_cart" value="Add to Cart" name="add">
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

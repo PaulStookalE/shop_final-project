@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Cart - Flask Shop
+{% endblock %}
+
+
+{% block content %}
+    {% with msgs = get_flashed_messages(with_categories=True) %}
+        {% for category, message in msgs %}
+            {% if category == 'error' %}
+                <div class="flash-error">
+                    {{ message | safe }}
+                </div>
+            {% else %}
+                <div class="success">
+                    {{ message | safe }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
+
+    <!-- Перевірка на наявність товарів у кошику і в негативному випадку надсилання flash повідомлення. -->
+    {% if not items %}
+            <div class="flash-error">
+                Cart is empty!<br>
+                <a href="{{ url_for('home') }}">Discover new items</a>
+            </div>
+
+    {% else %}
+            <a href="{{ url_for('home') }}" class="right-item">Add more items</a><br><br>
+    
+    {% endif %}
+    
+    <div class="items">
+        {% for i in range(items|lenght) %}
+            <div class="item">
+                <div class="item-rapper">
+                    <div class="img-rapper">
+                        <img src="{{ items[i].image }}" class="pic" alt="">
+                    </div>
+                    <br>{{ items[i].name }}<br>
+                    Quantity:
+                    <span class="right-item">{{ items[i].price }}</span><br>
+                    Total:
+                    <span class="right-item">{{ items[i]*items[i].price }}</span>
+                    <br><br>
+                    <a href="{{ url_for('remove', id=items[i].id, quantity=quantity[i]) }}">
+                        <button class="remove-from-cart">Remove From Cart</button>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+    </div>
+
+    <!-- Оплата -->
+    {% if price %}
+    {% endif %}
+
+{% endblock %}
